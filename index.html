@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deli Catering — Sistem Pengeluaran Kas</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo"><div class="logo-icon">🍽️</div><h2>Deli Catering</h2><p>Sistem Pengeluaran Kas</p></div>
+  <nav class="menu">
+    <button class="nav active" data-page="dashboard">🏠 Dashboard</button>
+    <button class="nav" data-page="pengeluaran">💸 Transaksi Pengeluaran</button>
+    <button class="nav" data-page="kategori">🏷️ Kategori</button>
+    <button class="nav" data-page="pemasok">📦 Pemasok</button>
+    <button class="nav" data-page="pegawai">👤 Pegawai</button>
+  </nav>
+  <div class="sidebar-note">4 entitas saling terhubung<br><small>Kategori · Pemasok · Pegawai · Pengeluaran</small></div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div><p class="eyebrow">SISTEM INFORMASI KEUANGAN</p><h1 id="pageTitle">Dashboard</h1><p class="subtitle">Kelola pengeluaran kas Deli Catering dengan data yang terhubung.</p><span class="status" id="dbStatus">Menghubungkan ke Supabase…</span></div>
+    <div class="date" id="today"></div>
+  </header>
+
+  <section id="dashboard" class="page active">
+    <div class="cards">
+      <article class="card"><p>Total Pengeluaran</p><h2 id="totalPengeluaran">Rp0</h2><small>Semua transaksi</small></article>
+      <article class="card green"><p>Jumlah Transaksi</p><h2 id="jumlahTransaksi">0</h2><small>Pengeluaran tercatat</small></article>
+      <article class="card gold"><p>Total Pemasok</p><h2 id="jumlahPemasok">0</h2><small>Pemasok terdaftar</small></article>
+      <article class="card rose"><p>Pengeluaran Bulan Ini</p><h2 id="bulanIni">Rp0</h2><small>Berdasarkan tanggal transaksi</small></article>
+    </div>
+    <section class="panel">
+      <div class="panel-heading"><div><h2>Ringkasan Pengeluaran</h2><p>Rekap otomatis berdasarkan entitas kategori.</p></div><button class="btn primary" id="quickAdd">＋ Tambah Transaksi</button></div>
+      <div class="summary-grid" id="categorySummary"></div>
+    </section>
+    <section class="panel">
+      <div class="panel-heading"><div><h2>Transaksi Terbaru</h2><p>Menampilkan lima transaksi terakhir.</p></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>No. Bukti</th><th>Keterangan</th><th>Kategori</th><th>Pemasok</th><th>Pegawai</th><th>Jumlah</th></tr></thead><tbody id="recentTable"></tbody></table></div>
+    </section>
+  </section>
+
+  <section id="pengeluaran" class="page">
+    <section class="panel">
+      <div class="panel-heading"><div><h2>Data Pengeluaran Kas</h2><p>Transaksi terhubung ke kategori, pemasok, dan pegawai.</p></div><button class="btn primary" id="addExpense">＋ Tambah Pengeluaran</button></div>
+      <div class="toolbar"><input id="searchExpense" placeholder="Cari nomor bukti, keterangan, pemasok..."><select id="filterCategory"><option value="">Semua kategori</option></select></div>
+      <div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>No. Bukti</th><th>Keterangan</th><th>Kategori</th><th>Pemasok</th><th>Pegawai</th><th>Metode</th><th>Jumlah</th><th>Aksi</th></tr></thead><tbody id="expenseTable"></tbody></table></div>
+    </section>
+  </section>
+
+  <section id="kategori" class="page">
+    <section class="panel">
+      <div class="panel-heading"><div><h2>Data Kategori</h2><p>Entitas kategori pengeluaran kas.</p></div><button class="btn primary" id="addCategory">＋ Tambah Kategori</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Kode</th><th>Nama Kategori</th><th>Keterangan</th><th>Jumlah Transaksi</th><th>Aksi</th></tr></thead><tbody id="categoryTable"></tbody></table></div>
+    </section>
+  </section>
+
+  <section id="pemasok" class="page">
+    <section class="panel">
+      <div class="panel-heading"><div><h2>Data Pemasok</h2><p>Entitas pemasok bahan dan kebutuhan catering.</p></div><button class="btn primary" id="addSupplier">＋ Tambah Pemasok</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Kode</th><th>Nama Pemasok</th><th>Telepon</th><th>Alamat</th><th>Jumlah Transaksi</th><th>Aksi</th></tr></thead><tbody id="supplierTable"></tbody></table></div>
+    </section>
+  </section>
+
+  <section id="pegawai" class="page">
+    <section class="panel">
+      <div class="panel-heading"><div><h2>Data Pegawai</h2><p>Entitas pegawai yang mencatat atau bertanggung jawab atas transaksi.</p></div><button class="btn primary" id="addEmployee">＋ Tambah Pegawai</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Kode</th><th>Nama Pegawai</th><th>Jabatan</th><th>Telepon</th><th>Jumlah Transaksi</th><th>Aksi</th></tr></thead><tbody id="employeeTable"></tbody></table></div>
+    </section>
+  </section>
+</main>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-box">
+    <div class="modal-head"><div><p class="eyebrow">FORM DATA</p><h2 id="modalTitle">Tambah Data</h2></div><button class="icon-btn" id="closeModal" aria-label="Tutup">×</button></div>
+    <form id="dataForm"><div id="formFields" class="form-grid"></div><p id="formHint" class="hint"></p><div class="form-actions"><button type="button" class="btn light" id="cancelModal">Batal</button><button type="submit" class="btn primary" id="submitBtn">Simpan Data</button></div></form>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
